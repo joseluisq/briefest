@@ -1,0 +1,32 @@
+{
+    "name": "testing-lib",
+    "version": "0.0.0",
+    "description": "Testing library",
+    "main": "index.js",
+    "typings": "index.d.ts",
+    "repository": "joseluisq/testing-lib",
+    "license": "MIT",
+    "author": {
+        "name": "Jose Quintana",
+        "url": "http://git.io/joseluisq"
+    },
+    "keywords": [
+        "testing",
+        "library"
+    ],
+    "engines": {
+        "node": ">= 10"
+    },
+    "scripts": {
+        "start": "env NODE_ENV=development ts-node src/index.ts",
+        "lint": "tslint --format stylish --project tsconfig.json",
+        "preversion": "yarn test && yarn build"
+    },
+    "devDependencies": {
+        "@types/node": "^13.7.1",
+        "ts-node": "^8.6.2",
+        "tslint": "^6.0.0",
+        "tslint-config-standard-plus": "^2.3.0",
+        "typescript": "^3.7.5"
+    }
+}

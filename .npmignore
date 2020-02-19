@@ -1,0 +1,16 @@
+app
+src
+node_modules
+tsconfig.json
+tslint.json
+coverage
+.travis.yml
+*.lock
+*.log
+.vscode
+test
+.cache
+**/.DS_Store
+**/.spec.ts
+**/.spec.js
+**/.map

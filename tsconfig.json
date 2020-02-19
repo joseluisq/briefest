@@ -1,0 +1,40 @@
+{
+    "compileOnSave": false,
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "dist",
+        "node_modules"
+    ],
+    "compilerOptions": {
+        "outDir": "./dist",
+        "strict": true,
+        "declaration": true,
+        "sourceMap": true,
+        "pretty": true,
+        "moduleResolution": "Node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "module": "CommonJS",
+        "target": "ES2015",
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "types": [
+            "@types/node"
+        ],
+        "lib": [
+            "ES2017",
+            "DOM",
+            "ES2015.Generator",
+            "ES2015.Iterable",
+            "ES2015.Promise",
+            "ES2015.Symbol",
+            "ES2015.Symbol.WellKnown",
+            "ESNext.AsyncIterable"
+        ]
+    }
+}
