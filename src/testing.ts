@@ -1,4 +1,5 @@
 import { IsEqual, TestCase, TestUnit } from "./testing.types"
+import { Level, normal } from "./output"
 
 const testList: {
     run: (fn: (assets: Function) => void, skip: boolean) => void,
@@ -23,7 +24,7 @@ export const test: TestUnit = (message: string, caseFunc: TestCase) => {
 
         if (!ok) {
             error = new Error(
-                `expected value \`${expected}\` should be equal to actual value \`${actual}\``
+                `expected (\`${expected}\`) should be equal to actual (\`${actual}\`)`
             )
         }
 
@@ -49,8 +50,22 @@ function runTests () {
     let failedTests = false
     let failedTestAssertion: any = undefined
 
+    console.log()
+    console.log(normal("blue", "Executing " + testList.length + " test(s)..."))
+    console.log()
+
     function testCompleted () {
         console.log(detail.join("\n"))
+        console.log()
+
+        // TODO: Print final testing result info
+        if (failedTests) {
+            console.log(normal("red", "Error! Tests fail.") + " " + normal("gray", "(0.00s)"))
+        } else {
+            console.log(normal("green", "Done! All tests pass.") + " " + normal("gray", "(0.00s)"))
+        }
+
+        console.log()
 
         if (failedTests && failedTestAssertion) {
             process.exit(1)
@@ -88,10 +103,27 @@ function runTests () {
             const lenNum = num.toString().length
             const spacesSub = " ".repeat(lenNum + 5 + status.length)
 
-            detail.push(`${num}. [${status}] ${t.message} (${asserts.length} assertion(s) on 0.00s)`)
+            let level: Level = "red"
+
+            if (status === "PASS") level = "green"
+            if (status === "SKIP") level = "gray"
+
+            const label = normal(level, status)
+            let assertionsPassed = ""
 
             if (status === "FAIL") {
-                detail.push(`${spacesSub}Assertion #${num} failed: ${assertFailed.assert.error.message}`)
+                assertionsPassed = (assertFailed.num - 1) + "/" + asserts.length
+            } else {
+                assertionsPassed = asserts.length + "/" + asserts.length
+            }
+
+            const testInfo = normal("gray", "(assertions: " + assertionsPassed + ", time: 0.00s)")
+
+            detail.push(`${num}. [${label}] ${t.message} ${testInfo}`)
+
+            if (status === "FAIL") {
+                const msg = normal("red", `Assertion #${assertFailed.num} failed: ${assertFailed.assert.error.message}`)
+                detail.push(spacesSub + msg)
             }
 
             n++
@@ -102,4 +134,4 @@ function runTests () {
     nextTest()
 }
 
-setTimeout(runTests, 500)
+setTimeout(runTests, 60)

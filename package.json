@@ -19,12 +19,14 @@
     },
     "scripts": {
         "start": "env NODE_ENV=development ts-node src/index.ts",
+        "watch": "env NODE_ENV=development tsnd --notify=false --respawn src/index.ts",
         "lint": "tslint --format stylish --project tsconfig.json",
+        "build": "yarn lint && tsc",
         "preversion": "yarn test && yarn build"
     },
     "devDependencies": {
         "@types/node": "^13.7.1",
-        "ts-node": "^8.6.2",
+        "ts-node-dev": "^1.0.0-pre.44",
         "tslint": "^6.0.0",
         "tslint-config-standard-plus": "^2.3.0",
         "typescript": "^3.7.5"

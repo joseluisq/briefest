@@ -45,9 +45,5 @@ export interface Test {
 /** Define a unit test case callback function. */
 export type TestCase = (test: Test, done: Function) => void
 
-// export interface TestRunner {
-//     run (): void
-// }
-
 /** Define an unit test. */
 export type TestUnit = (message: string, caseFunc: TestCase) => void
