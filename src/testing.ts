@@ -1,13 +1,40 @@
 import { IsEqual, TestCase, TestUnit } from "./testing.types"
 import { Level, normal } from "./output"
 
-const testList: {
+interface TestItem {
     run: (fn: (assets: Function) => void, skip: boolean) => void,
     message: string
-}[] = []
+}
+
+interface AssertItem {
+    ok: boolean
+    error: Error | undefined
+    message: string | undefined
+}
+
+const testList: TestItem[] = []
+
+const createErrorIfNotOk = (falseCondition: boolean, errMessage: string) =>
+    (!falseCondition ? new Error(errMessage) : undefined)
+
+const isPrimitive = <T>(value: T) => {
+    switch (typeof value) {
+        case "bigint":
+        case "boolean":
+        case "number":
+        case "string":
+        case "symbol":
+        case "undefined":
+            return true
+        default:
+            if (value === null) return true
+
+            return false
+    }
+}
 
 export const test: TestUnit = (message: string, caseFunc: TestCase) => {
-    const assertList: any[] = []
+    const assertList: AssertItem[] = []
     let skipTests = false
 
     function getAsserts () {
@@ -17,16 +44,17 @@ export const test: TestUnit = (message: string, caseFunc: TestCase) => {
     const isEqual: IsEqual = (expected, actual, message) => {
         if (skipTests) return
 
-        // 1. Evaluation
-        const ok = expected === actual
+        let ok = isPrimitive(expected) && isPrimitive(actual)
 
-        let error: Error | null = null
-
-        if (!ok) {
-            error = new Error(
-                `expected (\`${expected}\`) should be equal to actual (\`${actual}\`)`
-            )
+        // TODO: Cover symbols here particularly
+        if (ok && expected !== actual) {
+            ok = false
         }
+
+        const error = createErrorIfNotOk(
+            ok,
+            `expected (\`${expected}\`) should be equal to actual (\`${actual}\`)`
+        )
 
         assertList.push({ ok, error, message })
     }
