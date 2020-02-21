@@ -18,10 +18,11 @@
         "node": ">= 10"
     },
     "scripts": {
-        "start": "env NODE_ENV=development ts-node src/index.ts",
-        "watch": "env NODE_ENV=development tsnd --notify=false --respawn src/index.ts",
+        "start": "env NODE_ENV=development ts-node tests/testing.spec.ts",
+        "watch": "env NODE_ENV=development tsnd --notify=false --respawn tests/testing.spec.ts",
         "lint": "tslint --format stylish --project tsconfig.json",
         "build": "yarn lint && tsc",
+        "test": "ts-node tests/testing.spec.ts",
         "preversion": "yarn test && yarn build"
     },
     "devDependencies": {

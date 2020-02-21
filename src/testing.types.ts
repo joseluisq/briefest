@@ -1,8 +1,7 @@
-/** Assert that `expected` is equal to `actual`. */
-export type IsEqual = <T>(expected: T, actual: T, message?: string) => void
-
-/** Assert that `expected` is not equal to `actual`. */
-export type IsNotEqual = <T>(expected: T, actual: T, message?: string) => void
+export type IsPrimitive = <T>(expected: T, message?: string) => boolean
+export type IsEqual = <T>(expected: T, actual: T, message?: string) => boolean
+export type IsNotEqual = <T>(expected: T, actual: T, message?: string) => boolean
+export type IsEqualPrimitive = <T>(expected: T, actual: T, message?: string) => boolean
 
 /** Assert that `expected` is truthy. */
 export type IsTruthy = (expected: boolean, message?: string) => void
@@ -38,12 +37,22 @@ export type IsGreaterThanOrEqual = (expected: number, actual: number, message?: 
 export type IsLessThanOrEqual = (expected: number, actual: number, message?: string) => void
 
 /** Define all asserts for perform an unit test case. */
-export interface Test {
+export interface Asserts {
+    /** Assert that `expected` is valid primitive data type. */
+    isPrimitive: IsPrimitive
+
+    /** Assert that `expected` is equal to `actual`. */
     isEqual: IsEqual
+
+    /** Assert that `expected` is not equal to `actual`. */
+    isNotEqual: IsNotEqual
+
+    /** Assert that `expected` is not equal to `actual` value and data type. */
+    isEqualPrimitive: IsEqualPrimitive
 }
 
 /** Define a unit test case callback function. */
-export type TestCase = (test: Test, done: Function) => void
+export type TestCase = (asserts: Asserts, done: Function) => void
 
 /** Define an unit test. */
 export type TestUnit = (message: string, caseFunc: TestCase) => void

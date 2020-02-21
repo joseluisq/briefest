@@ -1,7 +1,8 @@
 {
     "compileOnSave": false,
     "include": [
-        "src"
+        "src",
+        "tests"
     ],
     "exclude": [
         "dist",
@@ -19,7 +20,7 @@
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "module": "CommonJS",
-        "target": "ES2015",
+        "target": "ESNext",
         "typeRoots": [
             "node_modules/@types"
         ],
@@ -28,13 +29,7 @@
         ],
         "lib": [
             "ES2017",
-            "DOM",
-            "ES2015.Generator",
-            "ES2015.Iterable",
-            "ES2015.Promise",
-            "ES2015.Symbol",
-            "ES2015.Symbol.WellKnown",
-            "ESNext.AsyncIterable"
+            "DOM"
         ]
     }
 }

@@ -1,4 +1,4 @@
-import { IsEqual, TestCase, TestUnit } from "./testing.types"
+import { Asserts, IsEqual, IsEqualPrimitive, IsNotEqual, IsPrimitive, TestCase, TestUnit } from "./testing.types"
 import { Level, normal } from "./output"
 
 interface TestItem {
@@ -17,7 +17,7 @@ const testList: TestItem[] = []
 const createErrorIfNotOk = (falseCondition: boolean, errMessage: string) =>
     (!falseCondition ? new Error(errMessage) : undefined)
 
-const isPrimitive = <T>(value: T) => {
+const isPrimitiveValue = <T>(value: T) => {
     switch (typeof value) {
         case "bigint":
         case "boolean":
@@ -34,33 +34,80 @@ const isPrimitive = <T>(value: T) => {
 }
 
 export const test: TestUnit = (message: string, caseFunc: TestCase) => {
-    const assertList: AssertItem[] = []
     let skipTests = false
+    const assertList: AssertItem[] = []
 
     function getAsserts () {
         return assertList
     }
 
-    const isEqual: IsEqual = (expected, actual, message) => {
-        if (skipTests) return
+    function appendAssert (ok: boolean, error: Error | undefined, message: string | undefined) {
+        assertList.push({ ok, error, message })
+        return ok
+    }
 
-        let ok = isPrimitive(expected) && isPrimitive(actual)
+    // --- Assert functions definition
 
-        // TODO: Cover symbols here particularly
-        if (ok && expected !== actual) {
+    const isPrimitive: IsPrimitive = (expected, message?: string) => {
+        if (skipTests) return false
+
+        const ok = isPrimitiveValue(expected)
+        const error = createErrorIfNotOk(
+            ok, `expected type \`${typeof expected}\` should be a valid primitive data type`
+        )
+
+        return appendAssert(ok, error, message)
+    }
+
+    const isEqualPrimitive: IsEqualPrimitive = (expected, actual, message) => {
+        if (skipTests) return false
+
+        let ok = isPrimitiveValue(expected) && isPrimitiveValue(actual)
+
+        if (ok && (typeof expected !== typeof actual || expected !== actual)) {
             ok = false
         }
 
         const error = createErrorIfNotOk(
-            ok,
-            `expected (\`${expected}\`) should be equal to actual (\`${actual}\`)`
+            ok, `expected \`${expected}\` should be equal to actual \`${actual}\` value and be valid primitives`
+        )
+
+        return appendAssert(ok, error, message)
+    }
+
+    const isEqual: IsEqual = (expected, actual, message) => {
+        if (skipTests) return false
+
+        const ok = expected === actual
+
+        const error = createErrorIfNotOk(
+            ok, `expected value \`${expected}\` should be equal to actual \`${actual}\` value`
         )
 
         assertList.push({ ok, error, message })
+        return ok
     }
 
-    const asserts = {
-        isEqual
+    const isNotEqual: IsNotEqual = (expected, actual, message) => {
+        if (skipTests) return false
+
+        const ok = expected !== actual
+
+        const error = createErrorIfNotOk(
+            ok, `expected value \`${expected}\` should not be equal to actual \`${actual}\` value`
+        )
+
+        assertList.push({ ok, error, message })
+        return ok
+    }
+
+    // --- Asserts API definition
+
+    const asserts: Asserts = {
+        isPrimitive,
+        isEqualPrimitive,
+        isEqual,
+        isNotEqual
     }
 
     testList.push({
@@ -150,7 +197,7 @@ function runTests () {
             detail.push(`${num}. [${label}] ${t.message} ${testInfo}`)
 
             if (status === "FAIL") {
-                const msg = normal("red", `Assertion #${assertFailed.num} failed: ${assertFailed.assert.error.message}`)
+                const msg = normal("red", `Assertion #${assertFailed.num} fails because ${assertFailed.assert.error.message}`)
                 detail.push(spacesSub + msg)
             }
 
