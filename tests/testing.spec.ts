@@ -23,20 +23,8 @@ test("isEqualPrimitive() tests", (t, done) => {
     t.isEqualPrimitive(null, null)
     t.isEqualPrimitive(undefined, undefined)
 
-    const a = () => void
-    t.isEqualPrimitive(a, a)
-
-    const b: number[] = []
-    t.isEqualPrimitive(b, b)
-
-    const c = {}
-    t.isEqualPrimitive(c, c)
-
-    const d = new Date()
-    t.isEqualPrimitive(d, d)
-
-    // BigInt
-    t.isEqualPrimitive(256n, 2n * 128n)
+    const symbol = Symbol("a")
+    t.isEqualPrimitive(symbol, symbol)
 
     done()
 })

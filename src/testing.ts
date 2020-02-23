@@ -69,7 +69,7 @@ export const test: TestUnit = (message: string, caseFunc: TestCase) => {
         }
 
         const error = createErrorIfNotOk(
-            ok, `expected \`${expected}\` should be equal to actual \`${actual}\` value and be valid primitives`
+            ok, `expected \`${typeof expected}\` should be equal to actual \`${typeof actual}\` value and primitive data type`
         )
 
         return appendAssert(ok, error, message)
