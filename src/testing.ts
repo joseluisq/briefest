@@ -84,8 +84,7 @@ export const test: TestUnit = (message: string, caseFunc: TestCase) => {
             ok, `expected value \`${expected}\` should be equal to actual \`${actual}\` value`
         )
 
-        assertList.push({ ok, error, message })
-        return ok
+        return appendAssert(ok, error, message)
     }
 
     const isNotEqual: IsNotEqual = (expected, actual, message) => {
@@ -97,8 +96,7 @@ export const test: TestUnit = (message: string, caseFunc: TestCase) => {
             ok, `expected value \`${expected}\` should not be equal to actual \`${actual}\` value`
         )
 
-        assertList.push({ ok, error, message })
-        return ok
+        return appendAssert(ok, error, message)
     }
 
     // --- Asserts API definition
@@ -119,14 +117,24 @@ export const test: TestUnit = (message: string, caseFunc: TestCase) => {
     })
 }
 
+const measure = (hrtime?: [number, number]) => process.hrtime ?
+    process.hrtime(hrtime) : [ window.performance.now() / 1e4, 0 ] as [number, number]
+const formatTime = (hrtime: [number, number]) =>
+    hrtime[0] + "s " + (process.hrtime ? hrtime[1] / 1e9 : hrtime[1]).toFixed(2) + "ms"
+
 function runTests () {
-    let n = 0
     const detail: string[] = []
+    const testLength = testList.length
+
+    const starTime = measure()
+
+    let n = 0
     let failedTests = false
     let failedTestAssertion: any = undefined
 
+    const s = testLength > 1 ? "tests" : "test"
     console.log()
-    console.log(normal("blue", "Executing " + testList.length + " test(s)..."))
+    console.log(normal("blue", `Executing ${testLength} ${s}...`))
     console.log()
 
     function testCompleted () {
@@ -134,10 +142,13 @@ function runTests () {
         console.log()
 
         // TODO: Print final testing result info
+        const timeFinish = formatTime(measure(starTime))
+        const timeTotal = normal("gray", "(" + timeFinish + ")")
+
         if (failedTests) {
-            console.log(normal("red", "Error! Tests fail.") + " " + normal("gray", "(0.00s)"))
+            console.log(normal("red", "Error! Tests fail.") + " " + timeTotal)
         } else {
-            console.log(normal("green", "Done! All tests pass.") + " " + normal("gray", "(0.00s)"))
+            console.log(normal("green", "Done! All tests pass.") + " " + timeTotal)
         }
 
         console.log()
@@ -149,12 +160,13 @@ function runTests () {
     }
 
     const nextTest = () => {
-        if (n >= testList.length) {
+        if (n >= testLength) {
             testCompleted()
             return
         }
 
         const t = testList[n]
+        const testStartTime = measure()
 
         t.run((getAsserts) => {
             const asserts = getAsserts()
@@ -192,7 +204,11 @@ function runTests () {
                 assertionsPassed = asserts.length + "/" + asserts.length
             }
 
-            const testInfo = normal("gray", "(assertions: " + assertionsPassed + ", time: 0.00s)")
+            const testEndTime = formatTime(measure(testStartTime))
+            const testInfo = normal(
+                "gray",
+                "(assertions: " + assertionsPassed + ", time: " + testEndTime + ")"
+            )
 
             detail.push(`${num}. [${label}] ${t.message} ${testInfo}`)
 
