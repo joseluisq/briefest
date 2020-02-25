@@ -1,4 +1,4 @@
-# Briefest [![npm](https://img.shields.io/npm/v/briefest.svg)](https://www.npmjs.com/package/briefest) [![npm](https://img.shields.io/npm/dt/briefest.svg)](https://www.npmjs.com/package/briefest) [![Build Status](https://travis-ci.com/joseluisq/briefest.svg?branch=master)](https://travis-ci.com/joseluisq/briefest) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+# Briefest [![npm](https://img.shields.io/npm/v/briefest.svg)](https://www.npmjs.com/package/briefest) [![npm](https://img.shields.io/npm/dt/briefest.svg)](https://www.npmjs.com/package/briefest) [![Build Status](https://travis-ci.com/joseluisq/briefest.svg?token=qB1iXZPP7iKjyeqfe4pA&branch=master)](https://travis-ci.com/joseluisq/briefest) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 > Small and fast [Typescript](https://www.typescriptlang.org/) [unit testing](https://en.wikipedia.org/wiki/Unit_testing) library with no dependencies.
 
