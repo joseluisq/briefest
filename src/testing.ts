@@ -2,7 +2,7 @@ import { Asserts, IsEqual, IsEqualPrimitive, IsNotEqual, IsPrimitive, TestCase, 
 import { Level, normal } from "./output"
 
 interface TestItem {
-    run: (fn: (assets: Function) => void, skip: boolean) => void,
+    run: (fn: (assets: () => AssertItem[]) => void, skip: boolean) => void,
     message: string
 }
 
@@ -11,6 +11,13 @@ interface AssertItem {
     error: Error | undefined
     message: string | undefined
 }
+
+interface AssertItemFail {
+    num: number
+    assert: AssertItem
+}
+
+type AssertsFunc = (fn: () => AssertItem[]) => void
 
 const testList: TestItem[] = []
 
@@ -109,9 +116,9 @@ export const test: TestUnit = (message: string, caseFunc: TestCase) => {
     }
 
     testList.push({
-        run: (cb: Function, skip = false) => {
+        run: (func: AssertsFunc, skip = false) => {
             skipTests = skip
-            caseFunc(asserts, () => cb(getAsserts))
+            caseFunc(asserts, () => func(getAsserts))
         },
         message
     })
@@ -119,20 +126,22 @@ export const test: TestUnit = (message: string, caseFunc: TestCase) => {
 
 const measure = (hrtime?: [number, number]) => process.hrtime ?
     process.hrtime(hrtime) : [ window.performance.now() / 1e4, 0 ] as [number, number]
+
 const formatTime = (hrtime: [number, number]) =>
     hrtime[0] + "s " + (process.hrtime ? hrtime[1] / 1e9 : hrtime[1]).toFixed(2) + "ms"
 
 function runTests () {
     const detail: string[] = []
     const testLength = testList.length
-
     const starTime = measure()
 
-    let n = 0
+    let counter = 0
+    let assertionsCounter = 0
     let failedTests = false
-    let failedTestAssertion: any = undefined
+    let failedTestAssertion: AssertItem | undefined = undefined
 
     const s = testLength > 1 ? "tests" : "test"
+
     console.log()
     console.log(normal("blue", `Executing ${testLength} ${s}...`))
     console.log()
@@ -141,38 +150,41 @@ function runTests () {
         console.log(detail.join("\n"))
         console.log()
 
-        // TODO: Print final testing result info
         const timeFinish = formatTime(measure(starTime))
-        const timeTotal = normal("gray", "(" + timeFinish + ")")
 
         if (failedTests) {
+            const timeTotal = normal("gray", "(" + timeFinish + ")")
             console.log(normal("red", "Error! Tests fail.") + " " + timeTotal)
         } else {
-            console.log(normal("green", "Done! All tests pass.") + " " + timeTotal)
+            console.log("Tests:", testLength)
+            console.log("Assertions:", assertionsCounter)
+            console.log("Time:", timeFinish)
+            console.log()
+            console.log(normal("green", "Done! All tests pass."))
         }
 
         console.log()
 
         if (failedTests && failedTestAssertion) {
-            process.exit(1)
-            // throw failedTestAssertion.error
+            if (process.exit) process.exit(1)
+            else throw failedTestAssertion.error
         }
     }
 
     const nextTest = () => {
-        if (n >= testLength) {
+        if (counter >= testLength) {
             testCompleted()
             return
         }
 
-        const t = testList[n]
+        const testUnit = testList[counter]
         const testStartTime = measure()
 
-        t.run((getAsserts) => {
+        testUnit.run((getAsserts) => {
             const asserts = getAsserts()
-            let assertFailed: any = undefined
+            let assertFailed: AssertItemFail | undefined = undefined
 
-            const num = n + 1
+            const num = counter + 1
             let status = failedTests ? "SKIP" : "PASS"
 
             for (let i = 0; i < asserts.length; i++) {
@@ -195,31 +207,33 @@ function runTests () {
             if (status === "PASS") level = "green"
             if (status === "SKIP") level = "gray"
 
-            const label = normal(level, status)
-            let assertionsPassed = ""
+            let assertionsStr = ""
 
-            if (status === "FAIL") {
-                assertionsPassed = (assertFailed.num - 1) + "/" + asserts.length
+            if (status === "FAIL" && assertFailed) {
+                assertionsStr = (assertFailed.num - 1) + "/" + asserts.length
             } else {
-                assertionsPassed = asserts.length + "/" + asserts.length
+                assertionsStr = asserts.length + "/" + asserts.length
+                assertionsCounter += asserts.length
             }
 
             const testEndTime = formatTime(measure(testStartTime))
             const testInfo = normal(
                 "gray",
-                "(assertions: " + assertionsPassed + ", time: " + testEndTime + ")"
+                "(assertions: " + assertionsStr + ", time: " + testEndTime + ")"
             )
 
-            detail.push(`${num}. [${label}] ${t.message} ${testInfo}`)
+            const label = normal(level, status)
 
-            if (status === "FAIL") {
+            detail.push(`${num}. [${label}] ${testUnit.message} ${testInfo}`)
+
+            if (status === "FAIL" && assertFailed && assertFailed.assert.error) {
                 const msg = normal("red", `Assertion #${assertFailed.num} fails because ${assertFailed.assert.error.message}`)
                 detail.push(spacesSub + msg)
             }
 
-            n++
+            counter++
             nextTest()
-        }, n <= 1 && !failedTests ? false : failedTests)
+        }, counter <= 1 && !failedTests ? false : failedTests)
     }
 
     nextTest()
