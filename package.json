@@ -1,6 +1,6 @@
 {
     "name": "briefest",
-    "version": "0.0.1-beta.0",
+    "version": "0.0.1-beta.1",
     "description": "Small and fast Typescript unit testing library with no dependencies",
     "main": "testing.js",
     "typings": "testing.d.ts",
