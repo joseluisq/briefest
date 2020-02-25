@@ -1,23 +1,17 @@
-import { Asserts, IsEqual, IsEqualPrimitive, IsNotEqual, IsPrimitive, TestCase, TestUnit } from "./testing.types"
+import {
+    AssertItem,
+    AssertItemFail,
+    Asserts,
+    AssertsFunc,
+    IsEqual,
+    IsEqualPrimitive,
+    IsNotEqual,
+    IsPrimitive,
+    TestCase,
+    TestItem,
+    TestUnit
+} from "./testing.types"
 import { Level, normal } from "./output"
-
-interface TestItem {
-    run: (fn: (assets: () => AssertItem[]) => void, skip: boolean) => void,
-    message: string
-}
-
-interface AssertItem {
-    ok: boolean
-    error: Error | undefined
-    message: string | undefined
-}
-
-interface AssertItemFail {
-    num: number
-    assert: AssertItem
-}
-
-type AssertsFunc = (fn: () => AssertItem[]) => void
 
 const testList: TestItem[] = []
 

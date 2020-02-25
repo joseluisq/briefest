@@ -56,3 +56,21 @@ export type TestCase = (asserts: Asserts, done: Function) => void
 
 /** Define an unit test. */
 export type TestUnit = (message: string, caseFunc: TestCase) => void
+
+export interface TestItem {
+    run: (func: (assets: () => AssertItem[]) => void, skip: boolean) => void,
+    message: string
+}
+
+export interface AssertItem {
+    ok: boolean
+    error: Error | undefined
+    message: string | undefined
+}
+
+export interface AssertItemFail {
+    num: number
+    assert: AssertItem
+}
+
+export type AssertsFunc = (func: () => AssertItem[]) => void
