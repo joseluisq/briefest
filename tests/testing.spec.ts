@@ -10,6 +10,7 @@ test("isPrimitive() tests", (t, done) => {
     t.isPrimitive(true)
     t.isPrimitive(null)
     t.isPrimitive(undefined)
+    t.isPrimitive(Symbol("a"))
 
     done()
 })
