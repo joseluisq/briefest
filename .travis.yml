@@ -20,14 +20,5 @@ cache:
 notifications:
     email: false
 
-services:
-    - xvfb
-
-addons:
-    chrome: stable
-
-before_script:
-    - export DISPLAY=:99.0
-
 script:
     - yarn test

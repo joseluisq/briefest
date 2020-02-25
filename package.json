@@ -1,18 +1,22 @@
 {
-    "name": "testing-lib",
+    "name": "briefest",
     "version": "0.0.0",
-    "description": "Testing library",
-    "main": "index.js",
-    "typings": "index.d.ts",
-    "repository": "joseluisq/testing-lib",
+    "description": "Small and fast Typescript unit testing library with no dependencies",
+    "main": "testing.js",
+    "typings": "testing.d.ts",
+    "repository": "joseluisq/briefest",
     "license": "MIT",
     "author": {
         "name": "Jose Quintana",
         "url": "http://git.io/joseluisq"
     },
     "keywords": [
+        "unit-testing",
         "testing",
-        "library"
+        "typescript",
+        "library",
+        "nodejs",
+        "browser"
     ],
     "engines": {
         "node": ">= 10"
@@ -21,12 +25,19 @@
         "start": "env NODE_ENV=development ts-node tests/testing.spec.ts",
         "watch": "env NODE_ENV=development tsnd --notify=false --respawn tests/testing.spec.ts",
         "lint": "tslint --format stylish --project tsconfig.json",
-        "build": "yarn lint && tsc",
-        "test": "ts-node tests/testing.spec.ts",
-        "preversion": "yarn test && yarn build"
+        "tsc": "yarn lint && tsc",
+        "clean": "rm -rf .cache dist",
+        "build": "yarn clean && yarn lint && env MODULE_FORMAT=umd MODULE_FILENAME=testing rollup -c && env MODULE_FORMAT=cjs MODULE_FILENAME=testing rollup -c",
+        "test": "yarn lint && ts-node tests/testing.spec.ts",
+        "preversion": "yarn build"
     },
     "devDependencies": {
+        "@rollup/plugin-commonjs": "^11.0.2",
+        "@rollup/plugin-node-resolve": "^7.1.1",
         "@types/node": "^13.7.1",
+        "rollup": "^1.31.0",
+        "rollup-plugin-terser": "^5.2.0",
+        "rollup-plugin-typescript2": "^0.25.3",
         "ts-node-dev": "^1.0.0-pre.44",
         "tslint": "^6.0.0",
         "tslint-config-standard-plus": "^2.3.0",
