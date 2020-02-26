@@ -2,7 +2,7 @@
 
 > Small and fast [Typescript](https://www.typescriptlang.org/) [unit testing](https://en.wikipedia.org/wiki/Unit_testing) library with no dependencies.
 
-![Testing using Briefest](https://user-images.githubusercontent.com/1700322/75292053-c0cd4880-5823-11ea-9a0a-1637cce7b7d8.png)
+![Testing using Briefest](https://user-images.githubusercontent.com/1700322/75325099-8215ad80-5878-11ea-9178-a62379ac92c5.png)
 
 ## Install
 
@@ -21,7 +21,7 @@ npm install briefest --save-dev
 [UMD](https://github.com/umdjs/umd/) file is also available on [unpkg](https://unpkg.com):
 
 ```html
-<script src="https://unpkg.com/briefest/briefest.umd.min.js"></script>
+<script src="https://unpkg.com/browse/briefest/testing.min.js"></script>
 ```
 
 You can use the library via `window.briefest`.
@@ -54,7 +54,7 @@ test("Simple tests", (t, done) => {
 ```ts
 import { test } from "briefest"
 
-const callbackTest = (cb: (v: number) => void) => setTimeout(() => cb(500), 200)
+const callbackTest = (func: (n: number) => void) => setTimeout(() => func(500), 200)
 const asyncTest = () => new Promise<number>((resolve) => setTimeout(() => resolve(600), 100))
 
 test("Async tests", (t, done) => {
